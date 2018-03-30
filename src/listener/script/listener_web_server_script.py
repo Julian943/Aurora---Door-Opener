@@ -78,5 +78,14 @@ def noPass():
     else:
         return jsonify(error="Only get method allowed in /noPass")
 
+@app.route('/setTimer')
+def setTimer():
+    if request.method == 'GET':
+        ser.write("c")
+        return jsonify(response="setTimer")
+    else:
+        return jsonify(error="Only get method allowed in /setTimer")
+
+
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=8080, debug=True, threaded=True)

@@ -1,3 +1,19 @@
+
+/*
+ * 
+ * Typical pin layout used:
+ * -----------------------------------------------------------------------------------------
+ *             MFRC522      Arduino       Arduino   Arduino    Arduino          Arduino
+ *             Reader/PCD   Uno/101       Mega      Nano v3    Leonardo/Micro   Pro Micro
+ * Signal      Pin          Pin           Pin       Pin        Pin              Pin
+ * -----------------------------------------------------------------------------------------
+ * RST/Reset   RST          9             5         D9         RESET/ICSP-5     RST
+ * SPI SS      SDA(SS)      10            53        D10        10               10
+ * SPI MOSI    MOSI         11 / ICSP-4   51        D11        ICSP-4           16
+ * SPI MISO    MISO         12 / ICSP-1   50        D12        ICSP-1           14
+ * SPI SCK     SCK          13 / ICSP-3   52        D13        ICSP-3           15
+ */
+
 //RFID thingies
 #include <SPI.h>
 #include <MFRC522.h>
@@ -5,19 +21,28 @@
 //Servo thingies
 #include <Servo.h>
 
- //RFID: 3.3v, gnd,  13,11,12,10,9 
- //Servo: 5v, gnd, 6
+//LCD Thingies
+#include <LiquidCrystal.h>
+
+ //RFID: 3.3v, gnd,  53 52 51 50 49 
+ //Servo: 5v, gnd, 7
  //ldr: A0
+ //LCD: 31,33,35,37,39,41
 
 //Declare servo
 Servo myservo;
-int servoPin = 6;
+int servoPin = 7;
 boolean openDoor = false;
 
 //Declare rfid
-constexpr uint8_t RST_PIN = 9;     //change this   
-constexpr uint8_t SS_PIN = 10;    //change this    
+constexpr uint8_t RST_PIN = 49;     //change this   
+constexpr uint8_t SS_PIN = 53;    //change this    
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
+
+//Declare lcd
+int rs = 41, en = 39, d4 = 37, d5 = 35, d6 = 33, d7 = 31;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
 
 //declare ldr
 int ldrPin = A0;
@@ -33,16 +58,18 @@ int avgVal = 0;
 unsigned long currentTime;
 
 void setup() {
-  delay(2000);
+  //Start serial
   Serial.begin(9600);
   //Start rfid thingies   
   SPI.begin();      
   mfrc522.PCD_Init();
   //Servo thingies 
   myservo.attach(servoPin);  
+  //LCD thingies
+  lcd.begin(16, 2);
   //LDR thingies
   pinMode(ldrPin,INPUT);
-  calibrateLDR();
+  //calibrateLDR();
   //Builtin led for calibartion purposes
   pinMode(13,OUTPUT);
 }
@@ -56,7 +83,7 @@ void calibrateLDR(){
     delay(100);
   }
 
-  currenTime = millis();
+  currentTime = millis();
   int val;
 
   //PRESS LDR TO GET MINIMUM VALUE
@@ -97,6 +124,7 @@ void calibrateLDR(){
 
 String getUid(){
   if(  mfrc522.PICC_IsNewCardPresent()   && mfrc522.PICC_ReadCardSerial() ){
+
       String res = "";
       // Dump debug info about the card; PICC_HaltA() is automatically called
       //Serial.println("UID MANUALLY: ");
@@ -119,6 +147,7 @@ String getUid(){
 
 
 char c;
+
 void loop() {
       //Check rfid
       String res = getUid();
@@ -132,6 +161,7 @@ void loop() {
             myservo.write(90);
             currentTime = millis();
             openDoor = true;
+            lcd.print("Bienvenido!");
          }
       }
 
@@ -155,7 +185,8 @@ void loop() {
       if(openDoor){
         if( millis() >= (currentTime + 5000)  ){
           openDoor = false;
-          myServo.write(0);
+          myservo.write(0);
+          lcd.clear();
         }
       }
         

@@ -7,6 +7,7 @@ import serial
 app = Flask(__name__)
 #ser = serial.Serial('/dev/cu.usbmodem1421',9600
 print("Serial opened")
+print("Soy el andres virtual")
 
 @app.route('/')
 def hello_world():
@@ -15,26 +16,21 @@ def hello_world():
     else:
         return jsonify(error="Only get method allowed")
 
-@app.route('/rm')
+@app.route('/rm', methods=['POST', 'GET'])
 def removeCard():
     if request.method == 'GET':
         return jsonify(response="Ok")
-    else:
-        return jsonify(error="Only get method allowed")
-
-
-@app.route('/in')
-def insertCard():
-    if request.method == 'GET':
+    elif request.method == 'POST':
+        #print(request.form['idSala'])
+        #print(request.form['idTarjeta'])
         return jsonify(response="Ok")
     else:
         return jsonify(error="Only get method allowed")
 
-
-@app.route('/card')
+@app.route('/card', methods=['POST', 'GET'])
 def validateCard():
-    if request.method == 'GET':
-        val = request.args.get('id')
+    if request.method == 'POST':
+        val = request.form['idCard']
         if val == "1a:b9:e2:2b":
             res = "true"
         else:
@@ -44,8 +40,6 @@ def validateCard():
         return jsonify(response=res)
     else:
         return jsonify(error="Only get method allowed")
-
-
 
 
 if __name__ == '__main__':

@@ -6,15 +6,24 @@ import serial
 app = Flask(__name__)
 ser = serial.Serial('/dev/cu.usbmodem1421',9600)
 print("Serial opened")
+print("Soy el de los numeritos")
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():
     if request.method == 'GET':
         return jsonify(response="Hola mundo")
     else:
         return jsonify(error="Only get method allowed")
 
-@app.route('/red')
+@app.route('/post', methods=['GET', 'POST'])
+def post_method():
+    if request.method == 'POST':
+        print(request.form['idSala'])
+        return jsonify(response="Hola post")
+    else:
+        return jsonify(error="Only post method allowed")
+
+@app.route('/red', methods=['GET', 'POST'])
 def red():
     if request.method == 'GET':
         ser.write("r")
@@ -22,7 +31,7 @@ def red():
     else:
         return jsonify(error="Only get method allowed in /red")
 
-@app.route('/green')
+@app.route('/green', methods=['GET', 'POST'])
 def green():
     if request.method == 'GET':
         ser.write("g")
@@ -30,7 +39,7 @@ def green():
     else:
         return jsonify(error="Only get method allowed in /green")
 
-@app.route('/yellow')
+@app.route('/yellow', methods=['GET', 'POST'])
 def yellow():
     if request.method == 'GET':
         ser.write("y")
@@ -38,7 +47,7 @@ def yellow():
     else:
         return jsonify(error="Only get method allowed in /yellow")
 
-@app.route('/threeNoises')
+@app.route('/threeNoises', methods=['GET', 'POST'])
 def threeNoises():
     if request.method == 'GET':
         ser.write("t")
@@ -46,7 +55,15 @@ def threeNoises():
     else:
         return jsonify(error="Only get method allowed in /threeNoises")
 
-@app.route('/annoy')
+@app.route('/beep', methods=['GET', 'POST'])
+def beep():
+    if request.method == 'GET':
+        ser.write("b")
+        return jsonify(response="beep")
+    else:
+        return jsonify(error="Only get method allowed in /passed")
+
+@app.route('/annoy', methods=['GET', 'POST'])
 def annoy():
     if request.method == 'GET':
         ser.write("a")
@@ -54,7 +71,7 @@ def annoy():
     else:
         return jsonify(error="Only get method allowed in /annoy")
 
-@app.route('/stop')
+@app.route('/stop', methods=['GET', 'POST'])
 def stop():
     if request.method == 'GET':
         ser.write("s")
@@ -62,15 +79,15 @@ def stop():
     else:
         return jsonify(error="Only get method allowed in /stop")
 
-@app.route('/passed')
+@app.route('/pass', methods=['GET', 'POST'])
 def passed():
     if request.method == 'GET':
         ser.write("p")
-        return jsonify(response="passed")
+        return jsonify(response="pass")
     else:
         return jsonify(error="Only get method allowed in /passed")
 
-@app.route('/noPass')
+@app.route('/noPass', methods=['GET', 'POST'])
 def noPass():
     if request.method == 'GET':
         ser.write("n")
@@ -78,10 +95,18 @@ def noPass():
     else:
         return jsonify(error="Only get method allowed in /noPass")
 
-@app.route('/setTimer')
+@app.route('/setTimer', methods=['GET', 'POST'])
 def setTimer():
     if request.method == 'GET':
         ser.write("c")
+        return jsonify(response="setTimer")
+    else:
+        return jsonify(error="Only get method allowed in /setTimer")
+
+@app.route('/stopAndResetTimer', methods=['GET', 'POST'])
+def stopAndResetTimer():
+    if request.method == 'GET':
+        ser.write("h")
         return jsonify(response="setTimer")
     else:
         return jsonify(error="Only get method allowed in /setTimer")

@@ -1,14 +1,16 @@
+//Right -> 1421
  #include <SevSeg.h>
 //Neded:
-  //RGB: ground, pin : 10 9 8 
+  //RGB: ground, pin : 4 3 2
   //1s4d: 31-41
   //no usar el 1 y 0
   //Buzzer: 8
 // Arduino Mega, it works on pins 2 - 13 and 44 - 46 <-- analog
 
-int red = 4;
-int green = 3;
-int blue = 2;
+
+int green = 4;
+int blue = 3;
+int red = 2;
 
 int buzzer = 8;
 
@@ -21,6 +23,10 @@ long passedNoiseTimeMeasure = 0;
 
 bool rejectedNoiseFlag = false;
 long rejectedNoiseTimeMeasure = 0;
+
+long beepCounter = 0;
+long beepTimer = 0;
+long beepFlag = false;
 
 SevSeg sevseg;
 long firstTimeMeasure = 0;
@@ -44,8 +50,13 @@ void setup() {
   bool resistorsOnSegments = false; // 'false' means resistors are on digit pins
   byte hardwareConfig = COMMON_ANODE;
   sevseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments);
-  sevseg.setNumber(12312312,2); 
   //Give it a couple of seconds for the script to detect all
+
+
+  analogWrite(red,255);
+  analogWrite(green,255);
+  analogWrite(blue,255);
+  
   delay(2000);
    
 }
@@ -58,7 +69,7 @@ void turnOnLedRGB(int redVal, int greenVal, int blueVal){
 
 long writeTime(long startTime, long minutes, long seconds){
   double maxTiem = (minutes*60*1000)+(seconds*1000) + 1000;
-  double current = (double)millis() - (double)firstTimeMeasure;
+  double current = (double)millis() - (double)startTime;
   double val = maxTiem - current; //if this fella is zero, time's up!
   
   double resMinutes = (long)(val/60000);
@@ -74,6 +85,21 @@ long writeTime(long startTime, long minutes, long seconds){
     sevseg.setNumber(res,2); 
     return res;
     }
+}
+
+void indefiniteBeeps(){
+    if(beepCounter%2 == 0){
+        noTone(buzzer);
+     }
+     else{
+        tone(buzzer,500); 
+     }
+  
+     if( (millis()) > (beepTimer + 500)){
+        beepTimer = millis();
+        beepCounter++;
+     }
+    
 }
 
 void threeNoisesFunction(){
@@ -126,31 +152,43 @@ void loop() {
     switch(c){
       case 'r':
         //turns led to red. "sala ocupada"     
+        //turnOnLedRGB(0,255,255);
         turnOnLedRGB(255,0,0);
       break;
       case 'g':
         //turns led to green. "sala libre"      
-        turnOnLedRGB(0,0,20);
+        //turnOnLedRGB(255,0,255);
+        turnOnLedRGB(0,255,0);
        
       break;
       case 'y':
         //turns led to yellow. "sala esperando" 
-        turnOnLedRGB(10,0,255);
+        //turnOnLedRGB(0,0,255);
+        turnOnLedRGB(125,125,0);
         
       break;
       case 't':
         //makes three noises with zumbador.  "sala será ocupada" 
         threeNoisesSwitch = 0;
         threeNoisesFlag = true;
-    
+      break;
+      case 'b':
+        //indefinite beeps!
+        beepFlag = true;
+        beepCounter = 0;
       break;
       case 'a':
+        beepFlag = false;
         //turns on buzzer. lcd indicates "la sala será evacuada" 
         tone(buzzer,500);
       break;
+      case 'h':
+        //stop timer and noise
+        writeTime(-1,-1,-1);
       case 's':
         //turns off buzzer. lcd indicates "sala evacuada"
         noTone(buzzer);
+        beepFlag = false;
         break; 
       case 'c':
         timerFlag = true;
@@ -175,12 +213,15 @@ void loop() {
       }
    }
 
+  if(beepFlag){
+    indefiniteBeeps();
+  }
+
   if(timerFlag){
-    if(writeTime(firstTimeMeasure,30,0) == 0){
+    if(writeTime(firstTimeMeasure,1,0) == 0){
       timerFlag  = false;
       tone(buzzer,500);
     }
-      
   }
 
   if(passedNoiseFlag){

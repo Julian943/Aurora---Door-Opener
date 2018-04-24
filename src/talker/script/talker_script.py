@@ -28,7 +28,7 @@ while 1:
     if "Card" in string:
         if "delete" in string:
             requests.get(otherArduinoServer + "stop")
-            url =  backEndServer + "rm"
+            url =  backEndServer + "delete"
             data = {
                 'idRoom': 1,
             }
@@ -48,16 +48,22 @@ while 1:
             'idCard': string
         }
 
-    print("Making response")
-    response = requests.post(url,data)
-    print("Hola")
-    responseData = json.loads(response.text)
+
+    try:
+        print("Making response")
+        response = requests.post(url,data)
+        print("Responded!")
+        responseData = json.loads(response.text)
+    except Exception:
+        print("Something went wrong with the connection or request")
+        pass
+    
 
     print("Response back")
     if "Card" not in string:
         result = responseData['response']
         if result == 'true':
-            requests.get(otherArduinoServer + "setTimer")
+            requests.get(otherArduinoServer + "setTimer?time=1080")
             ser.write("t")
             print("True!")
         else:

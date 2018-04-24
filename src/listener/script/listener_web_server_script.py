@@ -2,6 +2,7 @@
 #Flask app, jsonify jsonifies a response, request checks requests details
 from flask import Flask, jsonify, request
 import serial
+import time
 
 app = Flask(__name__)
 ser = serial.Serial('/dev/cu.usbmodem1421',9600)
@@ -98,7 +99,14 @@ def noPass():
 @app.route('/setTimer', methods=['GET', 'POST'])
 def setTimer():
     if request.method == 'GET':
+        timeLeft = request.args.get("time")
+        print(timeLeft)
         ser.write("c")
+        ser.write(timeLeft.encode())
+        ser.write("c")
+        time.sleep(0.1)
+        string = ser.readline().rstrip()
+        print(string)
         return jsonify(response="setTimer")
     else:
         return jsonify(error="Only get method allowed in /setTimer")

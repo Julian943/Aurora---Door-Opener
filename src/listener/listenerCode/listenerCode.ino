@@ -31,6 +31,11 @@ long beepFlag = false;
 SevSeg sevseg;
 long firstTimeMeasure = 0;
 bool timerFlag = false;
+long timerSeconds = 0;
+long timerMinutes = 0;
+long secondsRead = 0;
+String readingFromSerial;
+
 void setup() {
   //Serial port
   Serial.begin(9600);
@@ -53,9 +58,7 @@ void setup() {
   //Give it a couple of seconds for the script to detect all
 
 
-  analogWrite(red,255);
-  analogWrite(green,255);
-  analogWrite(blue,255);
+  turnOnLedRGB(0,255,0);
   
   delay(2000);
    
@@ -66,6 +69,7 @@ void turnOnLedRGB(int redVal, int greenVal, int blueVal){
   analogWrite(green,greenVal);
   analogWrite(blue,blueVal);
 }
+
 
 long writeTime(long startTime, long minutes, long seconds){
   double maxTiem = (minutes*60*1000)+(seconds*1000) + 1000;
@@ -113,14 +117,13 @@ void threeNoisesFunction(){
    if( (millis()) > (threeNoisesTimeMeasure + 500)){
       threeNoisesTimeMeasure = millis();
       threeNoisesSwitch++;
-   }
-  
+   } 
 }
 
 void passedSound(){
    if(millis() > (passedNoiseTimeMeasure + 500)){
       noTone(buzzer); 
-      turnOnLedRGB(0,0,0);
+      turnOnLedRGB(0,255,0);
    }
    else if(millis() > (passedNoiseTimeMeasure + 100)){
       analogWrite(buzzer,100);
@@ -134,7 +137,7 @@ void passedSound(){
 void rejectedSound(){
    if(millis() > (rejectedNoiseTimeMeasure + 500)){
       noTone(buzzer); 
-      turnOnLedRGB(0,0,0);
+      turnOnLedRGB(255,0,0);
    }
    else if(millis() > (rejectedNoiseTimeMeasure + 100)){
       analogWrite(buzzer,60);
@@ -191,8 +194,22 @@ void loop() {
         beepFlag = false;
         break; 
       case 'c':
-        timerFlag = true;
-        firstTimeMeasure = millis();
+          turnOnLedRGB(255,0,0);
+         //read seconds written
+        readingFromSerial = "";
+        c = Serial.read();
+        while(c != 'c'){
+          readingFromSerial+=c;
+           c = Serial.read();
+         }
+         secondsRead = (long)readingFromSerial.toInt();
+         Serial.println(readingFromSerial);
+         timerSeconds = secondsRead%60;
+         timerMinutes = secondsRead/60; 
+         firstTimeMeasure = millis();
+         timerFlag = true;
+
+        
       case 'p':
         passedNoiseTimeMeasure = millis();
         passedNoiseFlag = true;
@@ -218,7 +235,7 @@ void loop() {
   }
 
   if(timerFlag){
-    if(writeTime(firstTimeMeasure,1,0) == 0){
+    if(writeTime(firstTimeMeasure,timerMinutes,timerSeconds) == 0){
       timerFlag  = false;
       tone(buzzer,500);
     }

@@ -160,6 +160,10 @@ void loop() {
         lcd.clear();
         lcd.print("Bienvenido!");
      }
+     else{
+        lcd.clear();
+        lcd.print("Wrong card!");
+      }
   }
   
   //Check ldr

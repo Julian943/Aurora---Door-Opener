@@ -27,14 +27,25 @@ def removeCard():
     else:
         return jsonify(error="Only get method allowed")
 
+@app.route('/delete', methods=['POST', 'GET'])
+def deleteCard():
+    if request.method == 'GET':
+        return jsonify(response="Ok")
+    elif request.method == 'POST':
+        #print(request.form['idSala'])
+        #print(request.form['idTarjeta'])
+        return jsonify(response="Ok")
+    else:
+        return jsonify(error="Only get method allowed")
+
 @app.route('/card', methods=['POST', 'GET'])
 def validateCard():
     if request.method == 'POST':
         val = request.form['idCard']
         if val == "1a:b9:e2:2b":
-            res = "true"
+            res = "True"
         else:
-            res = "false"
+            res = "False"
         print(val)
         print(res)
         return jsonify(response=res)

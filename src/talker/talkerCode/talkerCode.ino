@@ -51,7 +51,7 @@ boolean waitingCard = false;
 boolean beepNoisesFlag = false;
 boolean cardInserted = false;
 long cardTimerCounter = 0;
-
+int marginValue = 0;
 //Range values 
 int minVal = 255;
 int maxVal = 0;
@@ -100,11 +100,11 @@ void calibrateLDR(){
     }
   }
   //Serial.println("Min: " + String(minVal));
-  lcd.clear();
-  lcd.print("Min: " + String(minVal));
-  lcd.setCursor(0,1);
-  lcd.print("Max: " + String(maxVal));
   midVal = (maxVal - minVal)/2;
+  lcd.clear();
+  lcd.print("Min: " + String(minVal) + " Max: " + String(maxVal));
+  lcd.setCursor(0,1);
+  lcd.print("Mid: " + String(midVal));
   delay(3000);
   lcd.clear();
   lcd.print("LDR Calibrado");
@@ -189,7 +189,7 @@ void loop() {
       if(ldrVal <= (minVal+(midVal/2))){ //means card WAS inserted
           waitingCard = false; //we stop the code from checking this flag
           cardInserted = true;  //and we tell it to check this  one
-
+          marginValue = ldrVal + 20;
           //REMOVE
           lcd.clear();
           lcd.print("Tarjeta insertada!");
@@ -208,13 +208,15 @@ void loop() {
   }
   if(cardInserted){ //if the card is inserted, we'll be checking if the card is removed
     ldrVal = analogRead(ldrPin);
-    if(ldrVal >= (maxVal-(midVal))){ //means the card was removed
+    if(ldrVal > marginValue){ //means the card was removed
         cardInserted = false;
         Serial.println("Card removed");
         
         //REMOVE
           lcd.clear();
           lcd.print("Removed!");
+          lcd.setCursor(0,1);
+          lcd.print("ldr:"+String(ldrVal) + ".Mar:" + String(marginValue));
     } 
   }
 }

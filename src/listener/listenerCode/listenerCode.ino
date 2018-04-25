@@ -123,28 +123,24 @@ void threeNoisesFunction(){
 void passedSound(){
    if(millis() > (passedNoiseTimeMeasure + 500)){
       noTone(buzzer); 
-      turnOnLedRGB(0,255,0);
    }
    else if(millis() > (passedNoiseTimeMeasure + 100)){
       analogWrite(buzzer,100);
    }
    else if(millis() > (passedNoiseTimeMeasure)){
       analogWrite(buzzer,60);
-      turnOnLedRGB(0,0,20);
    }
 }
 
 void rejectedSound(){
    if(millis() > (rejectedNoiseTimeMeasure + 500)){
       noTone(buzzer); 
-      turnOnLedRGB(255,0,0);
    }
    else if(millis() > (rejectedNoiseTimeMeasure + 100)){
       analogWrite(buzzer,60);
    }
    else if(millis() > (rejectedNoiseTimeMeasure)){
       analogWrite(buzzer,100);
-      turnOnLedRGB(255,0,0);
    }
 }
 
@@ -187,6 +183,7 @@ void loop() {
       break;
       case 'h':
         //stop timer and noise
+        timerFlag  = false;
         writeTime(-1,-1,-1);
       case 's':
         //turns off buzzer. lcd indicates "sala evacuada"
@@ -199,7 +196,10 @@ void loop() {
         readingFromSerial = "";
         c = Serial.read();
         while(c != 'c'){
-          readingFromSerial+=c;
+            if(c <= '9' && c >= '0'){
+                readingFromSerial+=c;   
+              }
+           
            c = Serial.read();
          }
          secondsRead = (long)readingFromSerial.toInt();
@@ -207,6 +207,10 @@ void loop() {
          timerSeconds = secondsRead%60;
          timerMinutes = secondsRead/60; 
          firstTimeMeasure = millis();
+
+         if((timerMinutes + timerSeconds) == 0) {
+            timerMinutes = 15;
+          }
          timerFlag = true;
 
         

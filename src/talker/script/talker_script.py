@@ -15,15 +15,17 @@ otherArduinoServer = "http://localhost:8080/"
 #backEndServer = "http://localhost:8081/"
 backEndServer = "http://47.254.65.201:8081/"
 #ser = serial.Serial('/dev/ttyACM0',9600)
- 
+lastRFIDScanned= ""
 print("Service waiting...")
 print("Soy el del rfid/lcd")
-
+skip = 0
 while 1:
     while ser.in_waiting == 0:
         pass
     time.sleep(0.1)
     string = ser.readline().rstrip()
+    string = string.encode('utf8')
+
     print(string)
     if "Card" in string:
         if "delete" in string:
@@ -32,37 +34,46 @@ while 1:
             data = {
                 'idRoom': 1,
             }
+        elif "removed" in string:
+            requests.get(otherArduinoServer + "stop")
+            url =  backEndServer + "rm"
+            data = {
+                'idRoom': 1,
+                'idCard': lastRFIDScanned
+            }
         else:
+            skip = 1
             if  "beeps" in string:
                 requests.get(otherArduinoServer + "beep")
-            elif "removed" in string:
-                requests.get(otherArduinoServer + "stopAndResetTimer")
             elif "inserted" in string:
                 requests.get(otherArduinoServer + "stop")
-            pass
     else:
-        print("Read some shit")
+        print("Read some card")
+        lastRFIDScanned = string
         url = backEndServer + "card"
         data = {
             'idRoom': 1,
             'idCard': string
         }
 
-
-    try:
-        print("Making response")
-        response = requests.post(url,data)
-        print("Responded!")
-        responseData = json.loads(response.text)
-    except Exception:
-        print("Something went wrong with the connection or request")
-        pass
+    if skip == 0:
+        try:
+            print("Making response")
+            response = requests.post(url,data)
+            print("Responded!")
+            responseData = json.loads(response.text)
+        except Exception:
+            print("Something went wrong with the connection or request")
+            pass
+    else:
+        skip = 0
     
 
     print("Response back")
     if "Card" not in string:
-        result = responseData['response']
-        if result == 'true':
+        result = str(responseData['response'])
+        print(result)
+        if result == "True":
             requests.get(otherArduinoServer + "setTimer?time=1080")
             ser.write("t")
             print("True!")

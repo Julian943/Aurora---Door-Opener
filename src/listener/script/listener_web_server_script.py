@@ -100,7 +100,6 @@ def noPass():
 def setTimer():
     if request.method == 'GET':
         timeLeft = request.args.get("time")
-        print(timeLeft)
         ser.write("c")
         ser.write(timeLeft.encode())
         ser.write("c")

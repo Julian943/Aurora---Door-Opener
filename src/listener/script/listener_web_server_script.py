@@ -6,9 +6,10 @@ import time
 
 app = Flask(__name__)
 ser = serial.Serial('/dev/cu.usbmodem1421',9600)
+#ser = serial.Serial('/dev/ttyACM0',9600)
+
 print("Serial opened")
 print("Soy el de los numeritos")
-
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
     if request.method == 'GET':

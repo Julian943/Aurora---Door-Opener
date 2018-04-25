@@ -9,12 +9,13 @@ import requests
 import json
 
 
+#ser = serial.Serial('/dev/ttyACM1',9600)
 ser = serial.Serial('/dev/cu.usbmodem1411',9600)
 
 otherArduinoServer = "http://localhost:8080/"
 #backEndServer = "http://localhost:8081/"
 backEndServer = "http://47.254.65.201:8081/"
-#ser = serial.Serial('/dev/ttyACM0',9600)
+
 lastRFIDScanned= ""
 print("Service waiting...")
 print("Soy el del rfid/lcd")

@@ -223,6 +223,7 @@ void loop() {
           lcd.print("Tarjeta");
           lcd.setCursor(0,1);
           lcd.print("removida!");
+
           //lcd.print("ldr:"+String(ldrVal) + ".Mar:" + String(marginValue));
     } 
   }

@@ -162,7 +162,9 @@ void loop() {
      }
      else{
         lcd.clear();
-        lcd.print("Wrong card!");
+        lcd.print("Tarjeta");
+        lcd.setCursor(0,1);
+        lcd.print("rechazada!");
       }
   }
   
@@ -174,7 +176,9 @@ void loop() {
 
           //REMOVE
           lcd.clear();
-          lcd.print("Reserva borrada!");
+          lcd.print("Reserva");
+          lcd.setCursor(0,1);
+          lcd.print("borrada!");
       }
       else if( millis() >= (currentTime + 5000) && beepNoisesFlag){
           beepNoisesFlag = false;
@@ -182,7 +186,9 @@ void loop() {
 
           //REMOVE
           lcd.clear();
-          lcd.print("Inserta tarjeta!");
+          lcd.print("Inserta");
+          lcd.setCursor(0,1);
+          lcd.print("tarjeta!");
       }
       ldrVal = analogRead(ldrPin);
       //if ldrVal is less than the threshold, deny the flag and print "cart inserted"
@@ -214,9 +220,10 @@ void loop() {
         
         //REMOVE
           lcd.clear();
-          lcd.print("Removed!");
+          lcd.print("Tarjeta");
           lcd.setCursor(0,1);
-          lcd.print("ldr:"+String(ldrVal) + ".Mar:" + String(marginValue));
+          lcd.print("removida!");
+          //lcd.print("ldr:"+String(ldrVal) + ".Mar:" + String(marginValue));
     } 
   }
 }

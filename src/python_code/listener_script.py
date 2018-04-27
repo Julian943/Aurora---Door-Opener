@@ -1,15 +1,31 @@
 # -*- coding: utf-8 -*-
+#Francisco Julián Huerta y Munive  A01323513
+#Jorge Alberto Beauregard Braco    A01328439
+#Tabatha Tabeli Acosta Pastrana    A01550280
+#Begoña Montes Gómez               A01329896
+
+#Fecha: 27 de Abril, 2018.
+
+#Descripcion: Codigo del script para el arduino listener que monta un servidor web que escucha por rutas especificas para poder comunicarse por puerto serial al arduino para poder controlarlo
+
 #Flask app, jsonify jsonifies a response, request checks requests details
 from flask import Flask, jsonify, request
+#serial for communication through usb port
 import serial
+#for time delays 
 import time
 
 app = Flask(__name__)
+#define serial for macos or linux
 ser = serial.Serial('/dev/cu.usbmodem1421',9600)
 #ser = serial.Serial('/dev/ttyACM0',9600)
 
 print("Serial opened")
-print("Soy el de los numeritos")
+print("Im the listener web server")
+
+
+#In general, we define routes that can be accessed through the url of the server (we use a tunneling service to make the localhost public) and tell the arduino what to do
+
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
     if request.method == 'GET':

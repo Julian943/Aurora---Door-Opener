@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+#TESTING WEB SERVER, NOT INCLUDED IN FUNCTIONAL CODE
+
 #Flask app, jsonify jsonifies a response, request checks requests details
 from flask import Flask, jsonify, request
 import serial

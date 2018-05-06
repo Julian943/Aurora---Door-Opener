@@ -4,5 +4,5 @@ Aurora is the codename for a working space administration system, that aims to r
 
 In order to replicate the functionality of the system, it is required to have all three components running. The hardware needed can be checked out at the circuit diagrams included.
 
-
+Thanks to [Dean Reading](https://github.com/DeanIsMe) and [Miguel Balboa](https://github.com/miguelbalboa) for their helpful libraries for the [RFID](https://github.com/miguelbalboa/rfid) and [SevSeg](https://github.com/DeanIsMe/SevSeg) libraries that made this project functional.
 
